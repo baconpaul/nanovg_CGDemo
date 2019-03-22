@@ -1,0 +1,6 @@
+[submodule "libs/nanovg_CoreGraphics"]
+	path = libs/nanovg_CoreGraphics
+	url = git@github.com:baconpaul/nanovg_CoreGraphics.git
+[submodule "libs/nanovg"]
+	path = libs/nanovg
+	url = https://github.com/memononen/nanovg
