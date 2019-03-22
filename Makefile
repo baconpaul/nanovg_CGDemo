@@ -15,8 +15,14 @@ bld/%.o: src/%.mm bld
 bld/nanovg_CoreGraphics.o: libs/nanovg_CoreGraphics/src/nanovg_CoreGraphics.mm
 	clang $(OPT) -c -ObjC++ -Ilibs/nanovg/example -Ilibs/nanovg/src -Ilibs/nanovg_CoreGraphics/include -fobjc-arc -fmodules -mmacosx-version-min=10.11  $< -o $@	
 
-bld/demo.o:	libs/nanovg/example/demo.c
-	clang $(OPT) -c $<  -Ilibs/nanovg/src -o $@
+bld/demo.c: libs/nanovg/example/demo.c Makefile
+	cat $< | sed 's/glReadPixel/\/\/glPixel/' \
+			 | sed 's/\.\.\/example/libs\/nanovg\/example/' \
+			 | sed 's/drawParagraph(vg/return; drawParagraph(vg/' \
+		> $@
+
+bld/demo.o:	bld/demo.c
+	clang $(OPT) -c $<  -Ilibs/nanovg/example -Ilibs/nanovg/src -o $@
 
 bld/nanovg.o:	libs/nanovg/src/nanovg.c
 	clang $(OPT) -c $<  -Ilibs/nanovg/src -o $@
