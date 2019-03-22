@@ -22,7 +22,7 @@
 void timerCallback( CFRunLoopTimerRef timer, void *info )
 {
    NSView *view = (__bridge NSView *)info;
-   [view setNeedsDisplay:YES];
+   //[view setNeedsDisplay:YES];
 }
 
 @implementation minimalDemoView

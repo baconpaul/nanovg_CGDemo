@@ -9,11 +9,15 @@ clean:
 
 OPT=-g
 CLANG_FLAGS=$(OPT) -Werror
+OBJS=bld/minimalApp.o bld/demo.o bld/nanovg.o bld/nanovg_CoreGraphics.o bld/nanovg_CoreGraphicsCocoa.o
 
 bld/%.o: src/%.mm bld
 	clang $(CLANG_FLAGS) -c -ObjC++ -Ilibs/nanovg/example -Ilibs/nanovg/src -Ilibs/nanovg_CoreGraphics/include -fobjc-arc -fmodules -mmacosx-version-min=10.11  $< -o $@
 
-bld/nanovg_CoreGraphics.o: libs/nanovg_CoreGraphics/src/nanovg_CoreGraphics.mm
+bld/nanovg_CoreGraphics.o: libs/nanovg_CoreGraphics/src/nanovg_CoreGraphics.cpp
+	clang $(CLANG_FLAGS) -c -ObjC++ -Ilibs/nanovg/example -Ilibs/nanovg/src -Ilibs/nanovg_CoreGraphics/include -fobjc-arc -fmodules -mmacosx-version-min=10.11  $< -o $@	
+
+bld/nanovg_CoreGraphicsCocoa.o: libs/nanovg_CoreGraphics/src/nanovg_CoreGraphicsCocoa.mm
 	clang $(CLANG_FLAGS) -c -ObjC++ -Ilibs/nanovg/example -Ilibs/nanovg/src -Ilibs/nanovg_CoreGraphics/include -fobjc-arc -fmodules -mmacosx-version-min=10.11  $< -o $@	
 
 bld/demo.c: libs/nanovg/example/demo.c Makefile
@@ -28,8 +32,8 @@ bld/demo.o:	bld/demo.c
 bld/nanovg.o:	libs/nanovg/src/nanovg.c
 	clang $(CLANG_FLAGS) -c $<  -Ilibs/nanovg/src -o $@
 
-product/minimalApp:	product bld/minimalApp.o bld/demo.o bld/nanovg.o bld/nanovg_CoreGraphics.o
-	clang $(CLANG_FLAGS) -o $@ bld/minimalApp.o bld/demo.o bld/nanovg.o bld/nanovg_CoreGraphics.o -framework Cocoa -lstdc++
+product/minimalApp:	product $(OBJS)
+	clang $(CLANG_FLAGS) -o $@ $(OBJS) -framework Cocoa -lstdc++
 
 
 all:	product/minimalApp
