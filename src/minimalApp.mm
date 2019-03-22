@@ -22,7 +22,7 @@
 void timerCallback( CFRunLoopTimerRef timer, void *info )
 {
    NSView *view = (__bridge NSView *)info;
-   //[view setNeedsDisplay:YES];
+   [view setNeedsDisplay:YES];
 }
 
 @implementation minimalDemoView
@@ -99,7 +99,7 @@ void timerCallback( CFRunLoopTimerRef timer, void *info )
     
     nvgEndFrame(vg );
     
-    self->t += 1.0 / 10.0;
+    self->t += 1.0 / 60.0;
 }
 
 @end

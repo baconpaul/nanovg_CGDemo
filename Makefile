@@ -23,7 +23,7 @@ bld/nanovg_CoreGraphicsCocoa.o: libs/nanovg_CoreGraphics/src/nanovg_CoreGraphics
 bld/demo.c: libs/nanovg/example/demo.c Makefile
 	cat $< | sed 's/glReadPixel/\/\/glPixel/' \
 			 | sed 's/\.\.\/example/libs\/nanovg\/example/' \
-			 | sed 's/drawParagraph(vg/return; drawParagraph(vg/' \
+			 | sed 's/drawWidths(vg/return; drawWidths(vg/' \
 		> $@
 
 bld/demo.o:	bld/demo.c
