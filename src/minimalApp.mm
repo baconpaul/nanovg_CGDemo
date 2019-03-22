@@ -15,16 +15,22 @@
 
 -(id)initWithFrame:(NSRect)frame;
 -(void)drawRect:(NSRect)rect;
+-(BOOL)isFlipped;
 
 @end
 
 void timerCallback( CFRunLoopTimerRef timer, void *info )
 {
    NSView *view = (__bridge NSView *)info;
-   //[view setNeedsDisplay:YES];
+   [view setNeedsDisplay:YES];
 }
 
 @implementation minimalDemoView
+
+- (BOOL) isFlipped
+{
+    return YES;
+}
 
 - (id)initWithFrame:(NSRect)frame {
    self = [super initWithFrame:frame];
@@ -54,43 +60,44 @@ void timerCallback( CFRunLoopTimerRef timer, void *info )
 - (void)drawRect:(NSRect)rect
 {
     // erase the background by drawing white
-    [[NSColor whiteColor] set];
+    [[NSColor colorWithDeviceRed:0.3f green:0.3f blue:0.3f alpha:1.0f] set]; //glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
     [NSBezierPath fillRect:rect];
+    NVGcontext *vg = self->ctx;
 
-    renderDemo(self->ctx, 1.0, 1.0, 1000, 600, self->t, 2.0, &(self->data));
+    renderDemo(vg, 1.0, 1.0, 1000, 600, self->t, 2.0, &(self->data));
 
-    nvgBeginFrame( self->ctx, 1000, 600, 1.0 );
+    nvgBeginFrame( vg, 1000, 600, 1.0 );
 
     for( int i=10; i<200; i+= 20 )
     {
        int off = 10 + i / 10;
-       nvgResetTransform(self->ctx);
-       nvgRotate(self->ctx, i / 200.0 );
-       nvgTranslate( self->ctx, 200, 200 );
+       nvgResetTransform(vg);
+       nvgRotate(vg, i / 200.0 );
+       nvgTranslate( vg, 200, 200 );
 
-       nvgBeginPath(self->ctx);
-       nvgMoveTo(self->ctx, i, i);
-       nvgLineTo(self->ctx, i+off, i);
-       nvgLineTo(self->ctx, i+off, i+off);
-       nvgLineTo(self->ctx, i, i+off);
-       nvgClosePath(self->ctx);
-       nvgFillColor(self->ctx, nvgRGB(i,255,255-i));
-       nvgFill(self->ctx);
+       nvgBeginPath(vg);
+       nvgMoveTo(vg, i, i);
+       nvgLineTo(vg, i+off, i);
+       nvgLineTo(vg, i+off, i+off);
+       nvgLineTo(vg, i, i+off);
+       nvgClosePath(vg);
+       nvgFillColor(vg, nvgRGB(i,255,255-i));
+       nvgFill(vg);
     }
 
-    nvgResetTransform(self->ctx);
-    nvgBeginPath(self->ctx);
+    nvgResetTransform(vg);
+    nvgBeginPath(vg);
     int i=200, off=300;
-    nvgMoveTo(self->ctx, i, i);
-    nvgLineTo(self->ctx, i+off, i);
-    nvgLineTo(self->ctx, i+off, i+off);
-    nvgLineTo(self->ctx, i, i+off);
-    nvgClosePath(self->ctx);
-    NVGpaint lg = nvgLinearGradient(self->ctx, 0,0,1,0, nvgRGB(255,0,0), nvgRGB(0,255,0));
-    nvgFillPaint(self->ctx, lg);
-    nvgFill(self->ctx);
+    nvgMoveTo(vg, i, i);
+    nvgLineTo(vg, i+off, i);
+    nvgLineTo(vg, i+off, i+off);
+    nvgLineTo(vg, i, i+off);
+    nvgClosePath(vg);
+    NVGpaint lg = nvgLinearGradient(vg, i, i, i+off, i+off, nvgRGB(255,0,0), nvgRGB(0,255,0));
+    nvgFillPaint(vg, lg);
+    nvgFill(vg);
     
-    nvgEndFrame(self->ctx );
+    nvgEndFrame(vg );
     
     self->t += 1.0 / 10.0;
 }
