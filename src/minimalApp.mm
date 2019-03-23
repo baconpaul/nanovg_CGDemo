@@ -7,10 +7,12 @@
 
 @interface minimalDemoView : NSView
 {
-   // members
-   NVGcontext *ctx;
-   DemoData data;
-   float t;
+    // members
+    NVGcontext *ctx;
+    DemoData data;
+    float t;
+
+    int dogImage;
 }
 
 -(id)initWithFrame:(NSRect)frame;
@@ -21,8 +23,8 @@
 
 void timerCallback( CFRunLoopTimerRef timer, void *info )
 {
-   NSView *view = (__bridge NSView *)info;
-   [view setNeedsDisplay:YES];
+    NSView *view = (__bridge NSView *)info;
+    //[view setNeedsDisplay:YES];
 }
 
 @implementation minimalDemoView
@@ -33,28 +35,30 @@ void timerCallback( CFRunLoopTimerRef timer, void *info )
 }
 
 - (id)initWithFrame:(NSRect)frame {
-   self = [super initWithFrame:frame];
-   if (self) {
-      self->ctx = nvgCreateCoreGraphics(0);
-      NSLog( @"self->ctx=%lu", (size_t)(self->ctx) );
-      loadDemoData(self->ctx, &self->data);
-      self->t = 0;
-   }
+    self = [super initWithFrame:frame];
+    if (self) {
+        self->ctx = nvgCreateCoreGraphics(0);
+        NSLog( @"self->ctx=%lu", (size_t)(self->ctx) );
+        loadDemoData(self->ctx, &self->data);
+        self->t = 0;
 
+        self->dogImage = nvgCreateImage(self->ctx, "src/dog.png", 0);
+    }
+    
    
-   CFTimeInterval      TIMER_INTERVAL = 1.0/60.0; // 60 FPS
-   CFRunLoopTimerContext TimerContext = {0, (void *)CFBridgingRetain(self), NULL, NULL, NULL};
-   CFAbsoluteTime             FireTime = CFAbsoluteTimeGetCurrent() + TIMER_INTERVAL;
-   CFRunLoopTimerRef idleTimer = CFRunLoopTimerCreate(kCFAllocatorDefault,
-                                                      FireTime,
-                                                      TIMER_INTERVAL,
-                                                      0, 0,
-                                                      timerCallback,
-                                                      &TimerContext);
-   if (idleTimer)
-      CFRunLoopAddTimer (CFRunLoopGetMain (), idleTimer, kCFRunLoopCommonModes);
-   
-   return self;
+    CFTimeInterval      TIMER_INTERVAL = 1.0/60.0; // 60 FPS
+    CFRunLoopTimerContext TimerContext = {0, (void *)CFBridgingRetain(self), NULL, NULL, NULL};
+    CFAbsoluteTime             FireTime = CFAbsoluteTimeGetCurrent() + TIMER_INTERVAL;
+    CFRunLoopTimerRef idleTimer = CFRunLoopTimerCreate(kCFAllocatorDefault,
+                                                       FireTime,
+                                                       TIMER_INTERVAL,
+                                                       0, 0,
+                                                       timerCallback,
+                                                       &TimerContext);
+    if (idleTimer)
+        CFRunLoopAddTimer (CFRunLoopGetMain (), idleTimer, kCFRunLoopCommonModes);
+    
+    return self;
 }
 
 - (void)drawRect:(NSRect)rect
@@ -64,7 +68,7 @@ void timerCallback( CFRunLoopTimerRef timer, void *info )
     [NSBezierPath fillRect:rect];
     NVGcontext *vg = self->ctx;
 
-    renderDemo(vg, 1.0, 1.0, 1000, 600, self->t, 2.0, &(self->data));
+    //renderDemo(vg, 1.0, 1.0, 1000, 600, self->t, 2.0, &(self->data));
 
     nvgBeginFrame( vg, 1000, 600, 1.0 );
 
@@ -86,17 +90,31 @@ void timerCallback( CFRunLoopTimerRef timer, void *info )
     }
 
     nvgResetTransform(vg);
-    nvgBeginPath(vg);
-    int i=200, off=300;
-    nvgMoveTo(vg, i, i);
-    nvgLineTo(vg, i+off, i);
-    nvgLineTo(vg, i+off, i+off);
-    nvgLineTo(vg, i, i+off);
-    nvgClosePath(vg);
-    NVGpaint lg = nvgLinearGradient(vg, i, i, i+off, i+off, nvgRGB(255,0,0), nvgRGB(0,255,0));
-    nvgFillPaint(vg, lg);
-    nvgFill(vg);
-    
+    {
+        nvgBeginPath(vg);
+        int i=200, off=300;
+        nvgMoveTo(vg, i, i);
+        nvgLineTo(vg, i+off, i);
+        nvgLineTo(vg, i+off, i+off);
+        nvgLineTo(vg, i, i+off);
+        nvgClosePath(vg);
+        NVGpaint lg = nvgLinearGradient(vg, i, i, i+off, i+off, nvgRGB(255,0,0), nvgRGB(0,255,0));
+        nvgFillPaint(vg, lg);
+        nvgFill(vg);
+    }
+    {
+        nvgBeginPath(vg);
+        int i=20, off=200;
+        nvgMoveTo(vg, i, i);
+        nvgLineTo(vg, i+off, i);
+        nvgLineTo(vg, i+off, i+off);
+        nvgLineTo(vg, i, i+off);
+        nvgClosePath(vg);
+        NVGpaint lg = nvgImagePattern(vg, 0, 0, 100, 100, 0, self->dogImage, 1);
+        nvgFillPaint(vg, lg);
+        nvgFill(vg);
+    }
+
     nvgEndFrame(vg );
     
     self->t += 1.0 / 60.0;

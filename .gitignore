@@ -34,3 +34,6 @@
 # Build directories
 bld/
 product/
+
+# Mac
+.DS_Store
