@@ -107,8 +107,8 @@ void timerCallback( CFRunLoopTimerRef timer, void *info )
         int i=20, off=200;
         nvgMoveTo(vg, i, i);
         nvgLineTo(vg, i+off, i);
-        nvgLineTo(vg, i+off, i+off);
-        nvgLineTo(vg, i, i+off);
+        nvgLineTo(vg, i+off, i+off+off);
+        nvgLineTo(vg, i, i+off+off);
         nvgClosePath(vg);
         NVGpaint lg = nvgImagePattern(vg, 0, 0, 100, 100, 0, self->dogImage, 1);
         nvgFillPaint(vg, lg);
