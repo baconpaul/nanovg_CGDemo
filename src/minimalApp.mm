@@ -78,7 +78,7 @@ void timerCallback( CFRunLoopTimerRef timer, void *info )
     [NSBezierPath fillRect:rect];
     NVGcontext *vg = self->ctx;
 
-    //renderDemo(vg, 1.0, 1.0, 1000, 600, self->t, 2.0, &(self->data));
+    renderDemo(vg, 1.0, 1.0, 1000, 600, self->t, 2.0, &(self->data));
 
     nvgBeginFrame( vg, 1000, 600, 1.0 );
 

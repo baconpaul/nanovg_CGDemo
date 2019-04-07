@@ -9,13 +9,14 @@ clean:
 
 OPT=-g
 CLANG_FLAGS=$(OPT) -Werror
+CPP_FLAGS=-std=c++17
 OBJS=bld/minimalApp.o bld/demo.o bld/nanovg.o bld/nanovg_CoreGraphics.o bld/nanovg_CoreGraphicsCocoa.o
 
 bld/%.o: src/%.mm bld
 	clang $(CLANG_FLAGS) -c -ObjC++ -Ilibs/nanovg/example -Ilibs/nanovg/src -Ilibs/nanovg_CoreGraphics/include -fobjc-arc -fmodules -mmacosx-version-min=10.11  $< -o $@
 
 bld/nanovg_CoreGraphics.o: libs/nanovg_CoreGraphics/src/nanovg_CoreGraphics.cpp
-	clang $(CLANG_FLAGS) -c -ObjC++ -Ilibs/nanovg/example -Ilibs/nanovg/src -Ilibs/nanovg_CoreGraphics/include -fobjc-arc -fmodules -mmacosx-version-min=10.11  $< -o $@	
+	clang $(CLANG_FLAGS) $(CPP_FLAGS) -c -ObjC++ -Ilibs/nanovg/example -Ilibs/nanovg/src -Ilibs/nanovg_CoreGraphics/include -fobjc-arc -fmodules -mmacosx-version-min=10.11  $< -o $@	
 
 bld/nanovg_CoreGraphicsCocoa.o: libs/nanovg_CoreGraphics/src/nanovg_CoreGraphicsCocoa.mm
 	clang $(CLANG_FLAGS) -c -ObjC++ -Ilibs/nanovg/example -Ilibs/nanovg/src -Ilibs/nanovg_CoreGraphics/include -fobjc-arc -fmodules -mmacosx-version-min=10.11  $< -o $@	
