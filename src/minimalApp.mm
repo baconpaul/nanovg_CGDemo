@@ -5,6 +5,10 @@
 
 #include "demo.h"
 
+#include <iostream>
+
+#define NDOGS 5
+
 @interface minimalDemoView : NSView
 {
     // members
@@ -12,7 +16,7 @@
     DemoData data;
     float t;
 
-    int dogImage;
+    int dogImage[NDOGS];
 }
 
 -(id)initWithFrame:(NSRect)frame;
@@ -24,7 +28,7 @@
 void timerCallback( CFRunLoopTimerRef timer, void *info )
 {
     NSView *view = (__bridge NSView *)info;
-    //[view setNeedsDisplay:YES];
+    [view setNeedsDisplay:YES];
 }
 
 @implementation minimalDemoView
@@ -42,7 +46,13 @@ void timerCallback( CFRunLoopTimerRef timer, void *info )
         loadDemoData(self->ctx, &self->data);
         self->t = 0;
 
-        self->dogImage = nvgCreateImage(self->ctx, "src/dog.png", 0);
+        for(int i=1;i<=NDOGS;++i)
+        {
+            char dogf[256];
+            sprintf(dogf,"img/dog%d.png", i);
+            std::cerr << "Loading image " << dogf << std::endl;
+            self->dogImage[i-1] = nvgCreateImage(self->ctx, dogf, 0);
+        }
     }
     
    
@@ -102,15 +112,16 @@ void timerCallback( CFRunLoopTimerRef timer, void *info )
         nvgFillPaint(vg, lg);
         nvgFill(vg);
     }
+    for( int cdog = 0; cdog < NDOGS; ++cdog )
     {
         nvgBeginPath(vg);
-        int i=20, off=200;
-        nvgMoveTo(vg, i, i);
-        nvgLineTo(vg, i+off, i);
-        nvgLineTo(vg, i+off, i+off+off);
-        nvgLineTo(vg, i, i+off+off);
+        int i=20, ix=i+cdog * 100, offx=75 + sin(self->t) * 50, offy=150 + cos(self->t*2) * 30;
+        nvgMoveTo(vg, ix, i);
+        nvgLineTo(vg, ix+offx, i);
+        nvgLineTo(vg, ix+offx, i+offy);
+        nvgLineTo(vg, ix, i+offy);
         nvgClosePath(vg);
-        NVGpaint lg = nvgImagePattern(vg, 0, 0, 100, 100, 0, self->dogImage, 1);
+        NVGpaint lg = nvgImagePattern(vg, 0, 0, 100, 100, 0, self->dogImage[cdog], 1);
         nvgFillPaint(vg, lg);
         nvgFill(vg);
     }
